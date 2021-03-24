@@ -8,19 +8,19 @@
 #include <random>
 #include <array>
 #include <memory>
-
-#include "qmath.cpp"
+#include <vector>
+#include "qmath.h"
 
 using namespace std;
 
-int main() {
-    int val;
+int main()
+{
     using namespace std::chrono;
 
     static const int NUM_RUNS = 10000000;
 
-    std::cout << "Running " << NUM_RUNS << " iterations.\n";
-    std::cout << "Generating Random Inputs\n";
+    std::vector<double> stdTimes;
+    std::vector<double> qmathTimes;
 
     unique_ptr<array<double, NUM_RUNS> const> inputArray = [&]() {
         random_device rd;
@@ -28,23 +28,21 @@ int main() {
         uniform_real_distribution<double> rand(1, 10000);
 
         auto arr = make_unique<std::array<double, NUM_RUNS>>();
-        for (auto &i : *arr) {
+        for (auto &i : *arr)
+        {
             i = rand(re);
         }
         return std::move(arr);
     }();
 
-    std::cout << "Done generating input.\n";
-
-    for (auto i = 1; i < 11; i++) {
-        std::cout << "Run " << i << "\n";
-        std::cout << "Running std\n";
-
+    for (auto i = 1; i < 11; i++)
+    {
         //Test std::sin;
         auto stdResults = make_unique<std::array<double, NUM_RUNS>>();
         auto const stdTime = [&]() {
             auto t1 = chrono::high_resolution_clock::now();
-            for (auto i = 0; i < inputArray->size(); i++) {
+            for (unsigned int i = 0; i < inputArray->size(); i++)
+            {
                 stdResults->at(i) = std::sin(2 * inputArray->at(i));
             }
             auto t2 = chrono::high_resolution_clock::now();
@@ -53,38 +51,56 @@ int main() {
         auto std2Results = make_unique<std::array<double, NUM_RUNS>>();
         auto const std2Time = [&]() {
             auto t1 = chrono::high_resolution_clock::now();
-            for (auto i = 0; i < inputArray->size(); i++) {
-                std2Results->at(i) = std::sin((float) (2 * inputArray->at(i))) + qmath::sin((float) (2 * inputArray->at(i)));
+            for (unsigned int i = 0; i < inputArray->size(); i++)
+            {
+                std2Results->at(i) = std::sin((float)(2 * inputArray->at(i))) + qmath::sin((float)(2 * inputArray->at(i)));
             }
             auto t2 = chrono::high_resolution_clock::now();
             return chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
         }() / 1000.; // divide by 1000 to get ms
 
-        std::cout << "Running qmath\n";
         auto GAResults = make_unique<std::array<double, NUM_RUNS>>();
         auto const GATime = [&]() { // time in ms (float)
             auto t1 = chrono::high_resolution_clock::now();
-            for (auto i = 0; i < inputArray->size(); i++) {
+            for (unsigned int i = 0; i < inputArray->size(); i++)
+            {
                 GAResults->at(i) = qmath::sin(2.f * inputArray->at(i));
             }
             auto t2 = chrono::high_resolution_clock::now();
             return chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
-        }() / 1000.;  // divide by 1000 to get ms
+        }() / 1000.; // divide by 1000 to get ms
 
         auto GA2Results = make_unique<std::array<double, NUM_RUNS>>();
         auto const GA2Time = [&]() { // time in ms (float)
             auto t1 = chrono::high_resolution_clock::now();
-            for (auto i = 0; i < inputArray->size(); i++) {
+            for (unsigned int i = 0; i < inputArray->size(); i++)
+            {
                 GA2Results->at(i) = qmath::sin(2.f * inputArray->at(i)) + qmath::sin(inputArray->at(i));
             }
             auto t2 = chrono::high_resolution_clock::now();
             return chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
-        }() / 1000.;  // divide by 1000 to get ms
+        }() / 1000.; // divide by 1000 to get ms
 
-        std::printf("std::    %11.6f ms\nqmath::  %11.6f ms\n\n", std2Time - stdTime, GA2Time - GATime);
+        stdTimes.push_back(std2Time - stdTime);
+        qmathTimes.push_back(GA2Time - GATime);
     }
 
-    std::cout << "\n";
+    std::cout << "std::   ";
+
+    for (const double result : stdTimes)
+    {
+        std::printf("%.3f ms ", result);
+    }
+
+    std::cout << std::endl
+              << "qmath:: ";
+
+    for (const double result : qmathTimes)
+    {
+        std::printf("%.3f ms ", result);
+    }
+
+    std::cout << std::endl;
 
     return 0;
 }

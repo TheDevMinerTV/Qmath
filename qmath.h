@@ -1,0 +1,55 @@
+#pragma once
+
+namespace qmath
+{
+	double abs(const double in);
+	float abs(const float in);
+	int abs(const int in);
+	long long abs(const long int in);
+	double frexp(const double in1, int * in2);
+	double frexp(const double in1, short * in2);
+	float frexp(const float in1, int * in2);
+	float frexp(const float in1, short * in2);
+	double sin(const double in);
+	float sin(const float in);
+	double qsin(const double in);
+	float qsin(const float in);
+	double cos(const double in);
+	float cos(const float in);
+	double qcos(const double in);
+	float qcos(const float in);
+	double tan(const double in);
+	float tan(const float in);
+	double qtan(const double in);
+	double cot(const double in);
+	float fcot(const float in);
+	double qcot(const double in);
+	double log(const double in);
+	double qlog(const double in);
+	double sqrt(const double in);
+	double qsqrt(const double in);
+	double exp(const double in);
+	float exp(const float in);
+	double cosh(const double in);
+	float cosh(const float in);
+	double sech(const double in);
+	float sech(const float in);
+	double sinh(const double in);
+	float sinh(const float in);
+	double csch(const double in);
+	float csch(const float in);
+	double tanh(const double in);
+	double coth(const double in);
+	double nint(double(*fun)(double), double * var, double low, double up);
+	float nint(float(*fun)(float), float * var, float low, float up);
+	double der4(double(*fun)(double), double * var, double point);
+	float der4(float(*fun)(float), float * var, float point);
+	double der6(double(*fun)(double), double * var, double point);
+	float der6(float(*fun)(float), float * var, float point);
+	double gnint(double(*fun)(), double * var, double low, double up);
+	float gnint(float(*fun)(), float * var, float low, float up);
+	double gder4(double(*fun)(), double * var, double point);
+	float gder4(float(*fun)(), float * var, float point);
+	double gder6(double(*fun)(), double * var, double point);
+	float gder6(float(*fun)(), float * var, float point);
+};
